@@ -3,7 +3,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
-var Heroes = [];
+var players = [];
 
 app.use(express.static('public'))
 
@@ -13,20 +13,21 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 
-  socket.on('user_connected', function(Hero){
-
-    Heroes[Hero.uuid] = Hero;
-
-    io.emit('update_client', [Heroes[Hero.uuid]]);
+  socket.on('user_connected', function(data){
+    
+    players[socket.id] = data;
   });
 
-  socket.on('update_server', function(Hero){
-
-    Heroes[Hero.uuid] = Hero;
-
-    io.emit('update_client', [Heroes[Hero.uuid]]);
+  socket.on('update_server', function(data){
+    
+    players[socket.id] = data;
+    //io.emit('update_client', players);
   });
 });
+
+setInterval(function() {
+  io.sockets.emit('update_client', players);
+}, 1000 / 60);
 
 http.listen(port, function(){
   console.log('listening on *:' + port);

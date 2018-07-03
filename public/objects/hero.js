@@ -6,10 +6,9 @@ function Hero(x,y,width,height,uuid) {
     this.velocity = 5;
     this.gravity = 15;
     this.state = "";
-    this.uuid = uuid;
 }
 
-Hero.prototype.draw = function() {
+Hero.prototype.update = function() {
 
     if (keyIsDown(LEFT_ARROW)) {
 
@@ -37,11 +36,6 @@ Hero.prototype.draw = function() {
 
         this.jump();
     }
-
-    noStroke();
-    ellipse(this.x, this.y, this.width, this.height);
-    textSize(12);
-    text(this.uuid, this.x - 40, this.y - 40);
 }
 
 Hero.prototype.jump = function() {

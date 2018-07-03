@@ -1,5 +1,6 @@
+var socket = io();
 var uuid = Math.random().toString(36).substr(2, 9);
-var hero = new Hero(35,570,60,60,uuid);
+var hero = new Hero(35,570,60,60);
 var Enemies = [];
 var session = new Session();
 
@@ -7,16 +8,29 @@ var session = new Session();
 function setup() {
     createCanvas(800,600);
     spawnEnemy();
-    session.start();
+    //session.start();
+
+    socket.emit('user_connected', {
+        "x": hero.x,
+        "y": hero.y
+    });
 }
 
 function draw() {
+
     clear();
     background(191,236,255);
 
     if(session.timeLeft > 0) {
             
-        hero.draw();
+        hero.update();
+
+        socket.emit('update_server', {
+            "x": hero.x,
+            "y": hero.y
+        });
+
+        drawPlayers();
 
         let hit;
 
@@ -58,4 +72,18 @@ function spawnEnemy() {
     var y = Math.floor(Math.random() * 560);
 
     Enemies.push(new Enemy(x,y,40,40));
+}
+
+function drawPlayers() {
+
+    socket.on('update_client', function(players){
+        
+        players.forEach(player => {
+
+            noStroke();
+            ellipse(player.x, player.y, player.width, player.height);
+            textSize(12);
+            text(player.key, player.x - 40, player.y - 40);
+        });
+    });
 }
