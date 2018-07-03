@@ -1,18 +1,29 @@
 var socket = io();
 var uuid = Math.random().toString(36).substr(2, 9);
 var hero = new Hero(35,570,60,60);
-var Enemies = [];
 var session = new Session();
+var Players = {};
+var Enemy = {};
+var EnemyHit = true;
+var sessionid;
 
+socket.on('update_client', (data) => {
+
+    Players = data.players;
+    Enemy = data.enemy;
+});
 
 function setup() {
     createCanvas(800,600);
-    spawnEnemy();
+    frameRate(60);
     //session.start();
 
     socket.emit('user_connected', {
         "x": hero.x,
-        "y": hero.y
+        "y": hero.y, 
+        "width": hero.width,
+        "height": hero.height,
+        "score": hero.score
     });
 }
 
@@ -25,36 +36,42 @@ function draw() {
             
         hero.update();
 
-        socket.emit('update_server', {
-            "x": hero.x,
-            "y": hero.y
-        });
-
+        noStroke();
         drawPlayers();
+        drawEnemy();
 
         let hit;
 
-        Enemies.forEach(enemy => {
-            enemy.draw();
+        Object.keys(Players).forEach(key => {
 
-            hit = collideRectCircle(enemy.x,enemy.y,40,40,hero.x,hero.y,60);
+            hit = collideRectCircle(Enemy.x,Enemy.y,40,40, Players[key].x, Players[key].y,60);
 
             if(hit) {
                 
-                session.score++;
-                Enemies.splice(Enemies.indexOf(enemy), 1);
-                spawnEnemy();
+                socket.emit('enemy_hit', key);
             }
-        })
+        });
+
+        hit = collideRectCircle(Enemy.x,Enemy.y,40,40, hero.x, hero.y,60);
+
+        if(hit) {
+            hero.score++;
+        }
         
-        textSize(18);
-        text('Score: ' + session.score, 10, 20);
-        text(session.timeLeft, 760, 20);
+        text(session.timeLeft, 760, 30);
+
+        socket.emit('update_server', {
+            "x": hero.x,
+            "y": hero.y,
+            "width": hero.width,
+            "height": hero.height,
+            "score": hero.score
+        });
     }
     else {
         textSize(24);
         textAlign(CENTER);
-        text('Score: ' + session.score, 400, 300);
+        text('Your score: ' + hero.score, 400, 300);
     }
 }
 
@@ -66,24 +83,19 @@ function keyPressed() {
     }
 }
 
-function spawnEnemy() {
+function drawPlayers() {
+ 
+    Object.keys(Players).forEach(key => {
 
-    var x = Math.floor(Math.random() * 760);
-    var y = Math.floor(Math.random() * 560);
-
-    Enemies.push(new Enemy(x,y,40,40));
+        ellipse(Players[key].x, Players[key].y, Players[key].width, Players[key].height);
+        textSize(12);
+        text(key, Players[key].x - 40, Players[key].y - 40);
+        textSize(18);
+        text(key + ': ' + Players[key].score, 10, 30 + (Object.keys(Players).indexOf(key) * 30));
+    });
 }
 
-function drawPlayers() {
+function drawEnemy() {
 
-    socket.on('update_client', function(players){
-        
-        players.forEach(player => {
-
-            noStroke();
-            ellipse(player.x, player.y, player.width, player.height);
-            textSize(12);
-            text(player.key, player.x - 40, player.y - 40);
-        });
-    });
+    rect(Enemy.x, Enemy.y, Enemy.width, Enemy.height);
 }
