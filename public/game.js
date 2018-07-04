@@ -4,13 +4,23 @@ var hero = new Hero(35,570,60,60);
 var session = new Session();
 var Players = {};
 var Enemy = {};
-var EnemyHit = true;
-var sessionid;
+var SessionID = "";
+var Connected = false;
 
 socket.on('update_client', (data) => {
 
     Players = data.players;
     Enemy = data.enemy;
+
+    if(!Connected) {
+
+        Connected = true;
+    }
+});
+
+socket.on('connect', () => {
+    
+    SessionID = socket.io.engine.id;
 });
 
 function setup() {
@@ -23,7 +33,7 @@ function setup() {
         "y": hero.y, 
         "width": hero.width,
         "height": hero.height,
-        "score": hero.score
+        "score": 0
     });
 }
 
@@ -32,31 +42,13 @@ function draw() {
     clear();
     background(191,236,255);
 
-    if(session.timeLeft > 0) {
-            
+    if(session.timeLeft > 0 && Connected) {
+        
         hero.update();
 
         noStroke();
         drawPlayers();
         drawEnemy();
-
-        let hit;
-
-        Object.keys(Players).forEach(key => {
-
-            hit = collideRectCircle(Enemy.x,Enemy.y,40,40, Players[key].x, Players[key].y,60);
-
-            if(hit) {
-                
-                socket.emit('enemy_hit', key);
-            }
-        });
-
-        hit = collideRectCircle(Enemy.x,Enemy.y,40,40, hero.x, hero.y,60);
-
-        if(hit) {
-            hero.score++;
-        }
         
         text(session.timeLeft, 760, 30);
 
@@ -65,13 +57,12 @@ function draw() {
             "y": hero.y,
             "width": hero.width,
             "height": hero.height,
-            "score": hero.score
+            "score": Players[SessionID].score
         });
     }
     else {
-        textSize(24);
-        textAlign(CENTER);
-        text('Your score: ' + hero.score, 400, 300);
+        
+        //Game ends
     }
 }
 
@@ -88,6 +79,7 @@ function drawPlayers() {
     Object.keys(Players).forEach(key => {
 
         ellipse(Players[key].x, Players[key].y, Players[key].width, Players[key].height);
+        textAlign(LEFT);
         textSize(12);
         text(key, Players[key].x - 40, Players[key].y - 40);
         textSize(18);

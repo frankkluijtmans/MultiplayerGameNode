@@ -6,7 +6,6 @@ function Hero(x,y,width,height,uuid) {
     this.velocity = 5;
     this.gravity = 15;
     this.state = "";
-    this.score = 0;
 }
 
 Hero.prototype.update = function() {
