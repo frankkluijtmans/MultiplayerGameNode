@@ -55,14 +55,11 @@ setInterval(function() {
         enemy.y = Math.floor(Math.random() * 560);
       }
   });
-  
-  if(Object.keys(players).length > 1) {
     
-    io.sockets.emit('update_client', {
-      "players": players,
-      "enemy": enemy
-    });
-  }
+  io.sockets.emit('update_client', {
+    "players": players,
+    "enemy": enemy
+  });
 }, 1000 / 60);
 
 http.listen(port, function(){

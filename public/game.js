@@ -5,18 +5,6 @@ var session = new Session();
 var Players = {};
 var Enemy = {};
 var SessionID = "";
-var Connected = false;
-
-socket.on('update_client', (data) => {
-
-    Players = data.players;
-    Enemy = data.enemy;
-
-    if(!Connected) {
-
-        Connected = true;
-    }
-});
 
 socket.on('connect', () => {
     
@@ -25,7 +13,7 @@ socket.on('connect', () => {
 
 function setup() {
     createCanvas(800,600);
-    frameRate(60);
+    noLoop();
     //session.start();
 
     socket.emit('user_connected', {
@@ -34,6 +22,14 @@ function setup() {
         "width": hero.width,
         "height": hero.height,
         "score": 0
+    });
+
+    socket.on('update_client', (data) => {
+
+        Players = data.players;
+        Enemy = data.enemy;
+        
+        redraw();
     });
 }
 
@@ -44,7 +40,7 @@ function draw() {
 
     if(session.timeLeft > 0) {
         
-        if(Connected) {
+        if(typeof Players[SessionID] !== 'undefined') {
 
             hero.update();
 
