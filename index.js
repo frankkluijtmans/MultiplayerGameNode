@@ -56,7 +56,7 @@ setInterval(function() {
       }
   });
   
-  if(Object.keys(players).length > 0) {
+  if(Object.keys(players).length > 1) {
     
     io.sockets.emit('update_client', {
       "players": players,

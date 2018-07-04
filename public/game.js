@@ -42,23 +42,25 @@ function draw() {
     clear();
     background(191,236,255);
 
-    if(session.timeLeft > 0 && Connected) {
+    if(session.timeLeft > 0) {
         
-        hero.update();
+        if(Connected) {
 
-        noStroke();
-        drawPlayers();
-        drawEnemy();
-        
-        text(session.timeLeft, 760, 30);
+            hero.update();
 
-        socket.emit('update_server', {
-            "x": hero.x,
-            "y": hero.y,
-            "width": hero.width,
-            "height": hero.height,
-            "score": Players[SessionID].score
-        });
+            noStroke();
+            drawPlayers();
+            drawEnemy();
+            text(session.timeLeft, 760, 30);
+
+            socket.emit('update_server', {
+                "x": hero.x,
+                "y": hero.y,
+                "width": hero.width,
+                "height": hero.height,
+                "score": Players[SessionID].score
+            });
+        }
     }
     else {
         
