@@ -7,6 +7,8 @@
     "socket.io": "^1.7.3"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "open": "heroku open -a frank-game-prd",
+    "open-stg": "heroku open -a frank-game-stg"
   }
 }

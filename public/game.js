@@ -1,46 +1,132 @@
+var socket = io();
 var uuid = Math.random().toString(36).substr(2, 9);
-var hero = new Hero(35,570,60,60,uuid);
-var Enemies = [];
+var hero = new Hero(35,570,60,60);
 var session = new Session();
+var Players = {};
+var PreviousState = {};
+var Enemy = {};
+var SessionID = "";
+var heroSprite;
+var heroSpriteFrame = 0;
+var enemySprite;
+var enemySpriteFrame = 0;
+var backgroundSprite;
 
+socket.on('connect', () => {
+    
+    SessionID = socket.io.engine.id;
+});
 
 function setup() {
     createCanvas(800,600);
-    spawnEnemy();
-    session.start();
+    noLoop();
+
+    heroSprite = [
+        [
+            loadImage("assets/hero1_1.png"),
+            loadImage("assets/hero1_1.png"),
+            loadImage("assets/hero1_1.png"),
+            loadImage("assets/hero1_2.png"),
+            loadImage("assets/hero1_2.png"),
+            loadImage("assets/hero1_2.png"),
+            loadImage("assets/hero1_3.png"),
+            loadImage("assets/hero1_3.png"),
+            loadImage("assets/hero1_3.png")
+        ],
+        [
+            loadImage("assets/hero2_3.png"),
+            loadImage("assets/hero2_3.png"),
+            loadImage("assets/hero2_3.png"),
+            loadImage("assets/hero2_1.png"),
+            loadImage("assets/hero2_1.png"),
+            loadImage("assets/hero2_1.png"),
+            loadImage("assets/hero2_2.png"),
+            loadImage("assets/hero2_2.png"),
+            loadImage("assets/hero2_2.png")
+        ]
+    ];
+
+    enemySprite = [
+        loadImage("assets/enemy.png"),
+        loadImage("assets/enemy.png"),
+        loadImage("assets/enemy.png"),
+        loadImage("assets/enemy_1.png"),
+        loadImage("assets/enemy_1.png"),
+        loadImage("assets/enemy_1.png"),
+        loadImage("assets/enemy_2.png"),
+        loadImage("assets/enemy_2.png"),
+        loadImage("assets/enemy_2.png")
+    ];
+
+    backgroundSprite = loadImage("assets/background.png");
+    //session.start();
+
+    socket.emit('user_connected', {
+        "x": hero.x,
+        "y": hero.y, 
+        "width": hero.width,
+        "height": hero.height,
+        "score": 0,
+        "nickname": prompt("Choose a nickname")
+    });
+
+    socket.on('update_client', (data) => {
+
+        PreviousState = Players;
+        Players = data.players;
+        Enemy = data.enemy;
+        
+        redraw();
+    });
 }
 
 function draw() {
+
     clear();
-    background(191,236,255);
+    background(backgroundSprite);
 
     if(session.timeLeft > 0) {
-            
-        hero.draw();
-
-        let hit;
-
-        Enemies.forEach(enemy => {
-            enemy.draw();
-
-            hit = collideRectCircle(enemy.x,enemy.y,40,40,hero.x,hero.y,60);
-
-            if(hit) {
-                
-                session.score++;
-                Enemies.splice(Enemies.indexOf(enemy), 1);
-                spawnEnemy();
-            }
-        })
         
-        textSize(18);
-        text('Score: ' + session.score, 10, 20);
-        text(session.timeLeft, 760, 20);
+        if(heroSpriteFrame === 8) {
+            
+            heroSpriteFrame = 0;
+        }
+        else {
+            
+            heroSpriteFrame++;
+        }
+
+        if(enemySpriteFrame === 8) {
+            
+            enemySpriteFrame = 0;
+        }
+        else {
+            
+            enemySpriteFrame++;
+        }
+
+        if(typeof Players[SessionID] !== 'undefined') {
+
+            hero.update();
+
+            noStroke();
+            drawPlayers();
+            drawEnemy();
+            text(session.timeLeft, 740, 35);
+
+            socket.emit('update_server', {
+                "x": hero.x,
+                "y": hero.y,
+                "width": hero.width,
+                "height": hero.height,
+                "score": Players[SessionID].score,
+                "nickname": Players[SessionID].nickname
+            });
+        }
     }
     else {
-        textSize(24);
-        textAlign(CENTER);
-        text('Score: ' + session.score, 400, 300);
+        
+        //Game ends
     }
 }
 
@@ -52,10 +138,25 @@ function keyPressed() {
     }
 }
 
-function spawnEnemy() {
+function drawPlayers() {
+    
+    var i = 0;
 
-    var x = Math.floor(Math.random() * 760);
-    var y = Math.floor(Math.random() * 560);
+    Object.keys(Players).forEach(key => {
 
-    Enemies.push(new Enemy(x,y,40,40));
+        image(heroSprite[i][heroSpriteFrame], Players[key].x - Players[key].width / 2, Players[key].y - Players[key].height / 2, Players[key].width, Players[key].height);
+        textFont('Gaegu');
+        textAlign(LEFT);
+        textSize(21);
+        text(Players[key].nickname, Players[key].x - 40, Players[key].y - 40);
+        textSize(32);
+        text(Players[key].nickname  + ': ' + Players[key].score, 15, 35 + (Object.keys(Players).indexOf(key) * 30));
+
+        i++;
+    });
+}
+
+function drawEnemy() {
+
+    image(enemySprite[enemySpriteFrame], Enemy.x - Enemy.width / 2, Enemy.y - Enemy.height / 2, Enemy.width, Enemy.height);
 }

@@ -1,7 +1,7 @@
 function Session() {
 
     this.score = 0;
-    this.timeLeft = 10;
+    this.timeLeft = 120;
 }
 
 Session.prototype.start = function() {
