@@ -1,7 +1,7 @@
 {
-  "name": "socket-chat-example",
+  "name": "multiplayergame-node",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "a multiplayer game made using socket.io and an express server",
   "dependencies": {
     "express": "^4.15.2",
     "socket.io": "^1.7.3"
@@ -10,5 +10,20 @@
     "start": "node index.js",
     "open": "heroku open -a frank-game-prd",
     "open-stg": "heroku open -a frank-game-stg"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.5.0",
+    "http-server": "^0.11.1",
+    "ts-loader": "^4.0.0",
+    "ts-node": "^4.1.0",
+    "tsify": "^3.0.4",
+    "typescript": "^2.7.1",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
   }
 }
