@@ -25,6 +25,11 @@ export default class Hero extends p5 {
 
     update() {
 
+        if(this.state === "jumping") {
+
+            this.jump();
+        }
+
         if (this.sketch.keyIsDown(LEFT_ARROW)) {
 
             if(this.x <= this.width / 2) {
@@ -45,11 +50,6 @@ export default class Hero extends p5 {
             }
 
             this.x += 5;
-        }
-
-        if(this.state === "jumping") {
-
-            this.jump();
         }
     }
 
