@@ -42,13 +42,7 @@ io.on('connection', function(socket){
     });
 
     delete players[socket.id];
-    session.started = false;
-    session.time = 120;
-
-    if(timer !== null) {
-
-      clearInterval(timer);
-    }
+    terminateSession();
   });
 });
 
@@ -113,11 +107,22 @@ function startSession() {
         return;
     }
 
-    io.sockets.emit('end_game');
-    Object.keys(players).forEach(key => { players[key].ready = false });
-    session.started = false;
-    clearInterval(timer);
+    terminateSession();
   }, 1000);
+}
+
+function terminateSession() {
+
+  io.sockets.emit('end_game');
+
+  Object.keys(players).forEach(key => { 
+    players[key].ready = false;
+    players[key].score = 0; 
+  });
+
+  session.started = false;
+  session.time = 120;
+  clearInterval(timer);
 }
 
 function collideRectCircle(rx, ry, rw, rh, cx, cy, diameter) {
