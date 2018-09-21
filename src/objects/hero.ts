@@ -1,4 +1,4 @@
-export default class Hero {
+export default class Hero extends p5 {
 
     public x: number;
     public y: number;
@@ -10,6 +10,8 @@ export default class Hero {
     private sketch: any;
     
     constructor(sketch,x,y,width,height) {
+
+        super();
 
         this.x = x;
         this.y = y;

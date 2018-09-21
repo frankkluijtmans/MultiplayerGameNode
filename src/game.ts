@@ -64,26 +64,27 @@ new p5(function(sketch) {
         
         heroSprite.update();
         enemySprite.update();
-
-        console.log(PlayerCollection.players);
-    
-        if(typeof PlayerCollection.players[SessionID] !== 'undefined') {
-    
-            hero.update();
-    
-            sketch.noStroke();
-            drawPlayers(sketch);
-            drawEnemy(sketch);
-            sketch.text('120', 740, 35);
-    
-            socket.emit('update_server', {
-                "x": hero.x,
-                "y": hero.y,
-                "width": hero.width,
-                "height": hero.height,
-                "score": PlayerCollection.players[SessionID].score,
-                "nickname": PlayerCollection.players[SessionID].nickname
-            });
+        
+        if(typeof PlayerCollection.players !== 'undefined') {
+            
+            if(typeof PlayerCollection.players[SessionID] !== 'undefined') {
+        
+                hero.update();
+        
+                sketch.noStroke();
+                drawPlayers(sketch);
+                drawEnemy(sketch);
+                sketch.text('120', 740, 35);
+        
+                socket.emit('update_server', {
+                    "x": hero.x,
+                    "y": hero.y,
+                    "width": hero.width,
+                    "height": hero.height,
+                    "score": PlayerCollection.players[SessionID].score,
+                    "nickname": PlayerCollection.players[SessionID].nickname
+                });
+            }
         }
     }
     
