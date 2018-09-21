@@ -1,6 +1,5 @@
-export default class Disconnected extends p5 {
+export default class Countdown extends p5 {
 
-    public user: string;
     public visible: boolean;
     public frame: number;
     public frameLength: number;
@@ -11,21 +10,20 @@ export default class Disconnected extends p5 {
         
         super();
 
-        this.user = "";
         this.visible = false;
         this.frame = 0;
         this.frameLength = 1000;
-        this.frames = [];
+        this.frames = [
+            "3",
+            "2",
+            "1",
+            "GO!"
+        ];
         this.sketch = sketch;
     }
 
     trigger(name: string) {
 
-        this.user = name;
-        this.frames = [
-            `${this.user} left the game`,
-            `${this.user} left the game`
-        ];
         this.visible = true;
 
         const renderer = setInterval(() => {
@@ -46,14 +44,11 @@ export default class Disconnected extends p5 {
 
         if(this.visible) {
 
-            this.sketch.fill('#ff5151');
-            this.sketch.rect(270, 0, 260, 40, 0, 0, 20);
-
             this.sketch.textFont('Gaegu');
             this.sketch.textAlign(CENTER);
-            this.sketch.textSize(18);
-            this.sketch.fill('#ffffff');
-            this.sketch.text(this.frames[this.frame], 400, 23);
+            this.sketch.textSize(68);
+            this.sketch.fill('#000000');
+            this.sketch.text(this.frames[this.frame], 400, 300);
         }
     }
 }

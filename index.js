@@ -83,19 +83,10 @@ setInterval(function() {
   if(ready === 2) {
     
     if(!session.started) {
-      
-      session.started = true;
-      
-      timer = setInterval(() => {
 
-        if(session.time > 0) {
-            
-            session.time--;
-            return;
-        }
-    
-        clearInterval(timer);
-      }, 1000);
+      io.sockets.emit('start_countdown');
+
+      startSession();
     }
   }
     
@@ -109,6 +100,25 @@ setInterval(function() {
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+
+function startSession() {
+
+  session.started = true;
+      
+  timer = setInterval(() => {
+
+    if(session.time > 0) {
+        
+        session.time--;
+        return;
+    }
+
+    io.sockets.emit('end_game');
+    Object.keys(players).forEach(key => { players[key].ready = false });
+    session.started = false;
+    clearInterval(timer);
+  }, 1000);
+}
 
 function collideRectCircle(rx, ry, rw, rh, cx, cy, diameter) {
 

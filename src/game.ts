@@ -2,6 +2,8 @@ import Hero from './objects/hero';
 import HeroSprite from './sprites/hero';
 import EnemySprite from './sprites/enemy';
 import BackgroundSprite from './sprites/background';
+import Disconnected from './ui/disconnected';
+import Countdown from './ui/countdown';
 import { PlayerCollection, Enemy } from './interfaces/interfaces';
 
 const socket = io();
@@ -30,15 +32,23 @@ socket.on('connect', () => {
     SessionID = socket.io.engine.id;
 });
 
+// UI elements
+let disconnected;
+let countdown;
 
 new p5(function(sketch) {
 
     sketch.setup = function() {
 
+        // Construct hero and sprites
         hero = new Hero(sketch, 35,570,60,60);
         heroSprite = new HeroSprite(sketch);
         enemySprite = new EnemySprite(sketch);
         backgroundSprite = new BackgroundSprite(sketch);
+
+        // Construct UI elements
+        disconnected = new Disconnected(sketch);
+        countdown = new Countdown(sketch);
         
         sketch.createCanvas(800,600);
         sketch.noLoop();
@@ -61,6 +71,23 @@ new p5(function(sketch) {
             
             sketch.redraw();
         });
+
+        socket.on('player_disconnected', (data) => {
+    
+            hero.ready = false;
+            disconnected.trigger(data.name);
+        });
+
+        socket.on('end_game', (data) => {
+    
+            hero.ready = false;
+            // Trigger scoreboard
+        });
+
+        socket.on('start_countdown', (data) => {
+    
+            countdown.trigger();
+        });
     }
     
     sketch.draw = function() {
@@ -70,6 +97,10 @@ new p5(function(sketch) {
         
         heroSprite.update();
         enemySprite.update();
+
+        // Render UI elements
+        disconnected.render();
+        countdown.render();
         
         if(typeof PlayerCollection.players !== 'undefined') {
 
