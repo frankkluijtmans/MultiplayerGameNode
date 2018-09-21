@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 var frameRate = 60;
 var players = {};
+var timer = null;
 var session = {
   "time": 120,
   "started": false
@@ -39,6 +40,11 @@ io.on('connection', function(socket){
     delete players[socket.id];
     session.started = false;
     session.time = 120;
+
+    if(timer !== null) {
+
+      clearInterval(timer);
+    }
   });
 });
 
@@ -63,7 +69,7 @@ setInterval(function() {
     }
     else {
 
-      if(players[key].ready && players[key].score === 0) {
+      if(players[key].ready) {
         
         ready++;
       }
@@ -75,7 +81,17 @@ setInterval(function() {
     if(!session.started) {
       
       session.started = true;
-      startTimer();
+      
+      timer = setInterval(() => {
+
+        if(session.time > 0) {
+            
+            session.time--;
+            return;
+        }
+    
+        clearInterval(timer);
+      }, 1000);
     }
   }
     
@@ -119,18 +135,4 @@ function collideRectCircle(rx, ry, rw, rh, cx, cy, diameter) {
 function dist(x,y,testx,testy) {
 
   return Math.hypot(testx - x, testy - y);
-}
-
-function startTimer() {
-
-  const timer = setInterval(() => {
-
-    if(session.time > 0) {
-        
-        session.time--;
-        return;
-    }
-
-    clearInterval(timer);
-  }, 1000);
 }
