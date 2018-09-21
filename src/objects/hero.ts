@@ -7,6 +7,7 @@ export default class Hero extends p5 {
     public velocity: number;
     public gravity: number;
     public state: string;
+    public ready: boolean;
     private sketch: any;
     
     constructor(sketch,x,y,width,height) {
@@ -20,6 +21,7 @@ export default class Hero extends p5 {
         this.velocity = 5;
         this.gravity = 15;
         this.state = "";
+        this.ready = false;
         this.sketch = sketch;
     }
 

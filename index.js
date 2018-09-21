@@ -3,7 +3,12 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
+var frameRate = 60;
 var players = {};
+var session = {
+  "time": 120,
+  "started": false
+}
 var enemy = {
   "x": Math.floor(Math.random() * 760),
   "y": Math.floor(Math.random() * 560),
@@ -29,13 +34,11 @@ io.on('connection', function(socket){
     players[socket.id] = data;
   });
 
-  socket.on('enemy_hit', function(key){
-  
-  });
-
   socket.on('disconnect', function () {
 
     delete players[socket.id];
+    session.started = false;
+    session.time = 120;
   });
 });
 
@@ -43,24 +46,28 @@ setInterval(function() {
 
   let hit;
 
-  Object.keys(players).forEach(key => {
+  if(session.started) {
 
-      hit = collideRectCircle(enemy.x,enemy.y,40,40, players[key].x, players[key].y,60);
+    Object.keys(players).forEach(key => {
 
-      if(hit) {
-          
-        players[key].score++;
-    
-        enemy.x = Math.floor(Math.random() * 760);
-        enemy.y = Math.floor(Math.random() * 560);
-      }
-  });
+        hit = collideRectCircle(enemy.x,enemy.y,40,40, players[key].x, players[key].y,60);
+
+        if(hit) {
+            
+          players[key].score++;
+      
+          enemy.x = Math.floor(Math.random() * 760);
+          enemy.y = Math.floor(Math.random() * 560);
+        }
+    });
+  }
     
   io.sockets.emit('update_client', {
     "players": players,
-    "enemy": enemy
+    "enemy": enemy,
+    "session": session
   });
-}, 1000 / 60);
+}, 1000 / frameRate);
 
 http.listen(port, function(){
   console.log('listening on *:' + port);

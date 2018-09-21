@@ -11,6 +11,7 @@ interface Player {
     width?: number,
     height?: number,
     score?: number,
+    ready?: boolean,
     nickname?: string
 }
 
