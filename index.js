@@ -45,21 +45,38 @@ io.on('connection', function(socket){
 setInterval(function() {
 
   let hit;
+  let ready = 0;
 
-  if(session.started) {
+  Object.keys(players).forEach(key => {
 
-    Object.keys(players).forEach(key => {
-
-        hit = collideRectCircle(enemy.x,enemy.y,40,40, players[key].x, players[key].y,60);
-
-        if(hit) {
-            
-          players[key].score++;
+    if(session.started) {
       
-          enemy.x = Math.floor(Math.random() * 760);
-          enemy.y = Math.floor(Math.random() * 560);
-        }
-    });
+      hit = collideRectCircle(enemy.x,enemy.y,40,40, players[key].x, players[key].y,60);
+
+      if(hit) {
+          
+        players[key].score++;
+    
+        enemy.x = Math.floor(Math.random() * 760);
+        enemy.y = Math.floor(Math.random() * 560);
+      }
+    }
+    else {
+
+      if(players[key].ready && players[key].score === 0) {
+        
+        ready++;
+      }
+    }
+  });
+
+  if(ready === 2) {
+    
+    if(!session.started) {
+      
+      session.started = true;
+      startTimer();
+    }
   }
     
   io.sockets.emit('update_client', {
@@ -102,4 +119,18 @@ function collideRectCircle(rx, ry, rw, rh, cx, cy, diameter) {
 function dist(x,y,testx,testy) {
 
   return Math.hypot(testx - x, testy - y);
+}
+
+function startTimer() {
+
+  const timer = setInterval(() => {
+
+    if(session.time > 0) {
+        
+        session.time--;
+        return;
+    }
+
+    clearInterval(timer);
+  }, 1000);
 }

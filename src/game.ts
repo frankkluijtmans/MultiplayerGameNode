@@ -3,7 +3,6 @@ import HeroSprite from './sprites/hero';
 import EnemySprite from './sprites/enemy';
 import BackgroundSprite from './sprites/background';
 import { PlayerCollection, Enemy } from './interfaces/interfaces';
-import Session from './objects/session';
 
 const socket = io();
 
