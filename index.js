@@ -37,6 +37,10 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function () {
 
+    io.sockets.emit('player_disconnected', {
+      "name": typeof players[socket.id] !== 'undefined' ? players[socket.id].nickname : ""
+    });
+
     delete players[socket.id];
     session.started = false;
     session.time = 120;
