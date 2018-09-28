@@ -1,0 +1,26 @@
+declare const p5: any;
+declare function setup(): void;
+declare function draw(): void;
+declare function createCanvaswindow(x: number, y:number): void;
+declare function noLoop(): void;
+declare function redraw(): void;
+declare function clear(): void;
+declare function background(sprite: any): void;
+declare function noStroke(): void;
+declare function text(text: string, x: number, y: number): void;
+declare function loadImage(image: any): void;
+declare function image(image: any, x: number, y: number, width: number, height: number): void;
+declare function textFont(font: string): void;
+declare function textAlign(position: any): void;
+declare function textSize(size: number): void;
+declare function keyIsDown(key: any): void;
+
+declare var keyCode: string;
+declare var mouseX: number;
+declare var mouseY: number;
+declare const UP_ARROW: any;
+declare const RIGHT_ARROW: any;
+declare const LEFT_ARROW: any;
+declare const LEFT: any;
+declare const RIGHT: any;
+declare const CENTER: any;
