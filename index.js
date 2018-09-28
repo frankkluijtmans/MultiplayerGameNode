@@ -53,7 +53,7 @@ setInterval(function() {
 
 	Object.keys(players).forEach(key => {
 
-		if(session.started) {
+		if(session.started && session.time < 120) {
 			
 			hit = collideRectCircle(enemy.x,enemy.y,40,40, players[key].x, players[key].y,60);
 
@@ -78,7 +78,7 @@ setInterval(function() {
 		
 		if(!session.started) {
 
-			countDown();
+			startSession();
 		}
 	}
 		
@@ -93,15 +93,16 @@ http.listen(port, function(){
 	console.log('listening on *:' + port);
 });
 
-function countDown() {
+function startSession() {
 
 	io.sockets.emit('start_countdown');
+
 	session.started = true;
 
-	setTimeout(startSession, 3000);
+	setTimeout(startTimer, 3000);
 }
 
-function startSession() {
+function startTimer() {
 			
 	timer = setInterval(() => {
 

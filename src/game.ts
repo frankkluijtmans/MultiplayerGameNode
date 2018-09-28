@@ -113,10 +113,13 @@ new p5(function(sketch) {
 
                 if(CurrentSession.started) {
                     
-                    drawEnemy(sketch);
+                    if(!countdown.visible) {
+                        
+                        drawEnemy(sketch);
+                    }
                 }
                 else {
-
+                        
                     drawReadyButton(sketch, hero.ready);
                 }
 
